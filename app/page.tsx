@@ -5,8 +5,16 @@ import { Message, useChat } from "@ai-sdk/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Send, RefreshCw } from "lucide-react";
+import {
+  Loader2,
+  Send,
+  RefreshCw,
+  Cloud,
+  Thermometer,
+  Info,
+} from "lucide-react";
 import { presetPrompts } from "@/prompts";
+import { getWeatherIcon } from "@/utils";
 
 export default function Chat() {
   const {
@@ -23,7 +31,6 @@ export default function Chat() {
     // run client-side tools that are automatically executed:
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "showWeatherInformation") {
-        // display tool. add tool result that informs the llm that the tool was executed.
         return "Weather information was shown to the user.";
       }
     },
@@ -31,29 +38,17 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col w-full h-dvh max-w-2xl py-4 px-4 md:py-8 mx-auto">
-      <Card className="flex-1 overflow-hidden flex flex-col">
+      <Card className="flex-1 overflow-hidden flex flex-col shadow-lg">
         <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 ? (
             <div className="h-full flex items-center justify-center text-center text-muted-foreground">
-              <div>
-                <h3 className="text-lg font-medium mb-2">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-medium mb-2">
                   Welcome to Okinawa Go
                 </h3>
-                <div className="flex flex-wrap gap-2 justify-center mt-4">
-                  {presetPrompts.map((prompt, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      onClick={() => {
-                        handleInputChange({
-                          target: { value: prompt },
-                        } as React.ChangeEvent<HTMLInputElement>);
-                      }}
-                    >
-                      {prompt}
-                    </Button>
-                  ))}
-                </div>
+                <p className="text-sm max-w-md">
+                  Your personal assistant for discovering Okinawa.
+                </p>
               </div>
             </div>
           ) : (
@@ -64,7 +59,7 @@ export default function Chat() {
                   m.role === "user"
                     ? "bg-primary text-primary-foreground ml-auto"
                     : "bg-muted"
-                } max-w-[85%]`}
+                } max-w-[85%] shadow-sm transition-opacity duration-300 ease-in-out`}
               >
                 <div className="whitespace-pre-wrap">{m.content}</div>
                 {m.toolInvocations?.map((toolInvocation: ToolInvocation) => {
@@ -75,26 +70,43 @@ export default function Chat() {
                     return (
                       <Card
                         key={toolCallId}
-                        className="mt-3 bg-card text-card-foreground"
+                        className="mt-3 bg-card text-card-foreground overflow-hidden border"
                       >
-                        <CardContent className="p-3 space-y-2">
-                          <h4 className="font-semibold">{args?.city ?? ""}</h4>
-                          <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
+                        <CardContent className="p-4 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-bold text-xl">
+                              {args?.city ?? ""}
+                            </h4>
+                            {args?.weather && (
+                              <span className="text-2xl">
+                                {getWeatherIcon(args.weather)}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-2 bg-muted p-2 rounded">
                               {args?.weather && (
-                                <span className="font-medium">
-                                  {args.weather}
-                                </span>
+                                <div className="flex items-center">
+                                  <Cloud className="h-4 w-4 mr-1" />
+                                  <span className="font-medium">
+                                    {args.weather}
+                                  </span>
+                                </div>
                               )}
                               {args?.temperature && (
-                                <span className="font-medium">
-                                  {args.temperature} °C
-                                </span>
+                                <div className="flex items-center ml-4">
+                                  <Thermometer className="h-4 w-4 mr-1" />
+                                  <span className="font-medium">
+                                    {args.temperature}°C
+                                  </span>
+                                </div>
                               )}
                             </div>
                             {args?.typicalWeather && (
-                              <div className="text-sm text-muted-foreground">
-                                {args.typicalWeather}
+                              <div className="text-sm text-muted-foreground flex items-start">
+                                <Info className="h-4 w-4 mr-2 mt-1 shrink-0" />
+                                <span>{args.typicalWeather}</span>
                               </div>
                             )}
                           </div>
@@ -108,9 +120,9 @@ export default function Chat() {
           )}
 
           {(status === "submitted" || status === "streaming") && (
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="flex items-center gap-2 text-muted-foreground p-2 bg-muted rounded w-fit">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>
+              <span className="text-sm">
                 {status === "submitted" ? "Loading..." : "Thinking..."}
               </span>
             </div>
@@ -119,8 +131,8 @@ export default function Chat() {
 
         <div className="p-4 border-t">
           {error && (
-            <div className="mb-4">
-              <div className="text-destructive mb-2">
+            <div className="mb-4 p-3 rounded border bg-destructive/10 border-destructive/20">
+              <div className="text-destructive mb-2 font-medium">
                 An error occurred. Please try again.
               </div>
               <Button
@@ -135,11 +147,29 @@ export default function Chat() {
             </div>
           )}
 
+          <div className="flex flex-wrap gap-2 justify-start mb-3">
+            {presetPrompts.map((prompt, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="text-muted-foreground"
+                onClick={() => {
+                  handleInputChange({
+                    target: { value: prompt },
+                  } as React.ChangeEvent<HTMLInputElement>);
+                }}
+              >
+                {prompt}
+              </Button>
+            ))}
+          </div>
+
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               className="flex-1"
               value={input}
-              placeholder="Type a message..."
+              placeholder="Type a message about Okinawa..."
               onChange={handleInputChange}
               disabled={status !== "ready"}
             />
