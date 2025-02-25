@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Send, RefreshCw } from "lucide-react";
+import { presetPrompts } from "@/prompts";
 
 export default function Chat() {
   const {
@@ -16,7 +17,6 @@ export default function Chat() {
     error,
     status,
     reload,
-    stop,
   } = useChat({
     api: "/api/use-chat",
     maxSteps: 5,
@@ -39,6 +39,21 @@ export default function Chat() {
                 <h3 className="text-lg font-medium mb-2">
                   Welcome to Okinawa Go
                 </h3>
+                <div className="flex flex-wrap gap-2 justify-center mt-4">
+                  {presetPrompts.map((prompt, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      onClick={() => {
+                        handleInputChange({
+                          target: { value: prompt },
+                        } as React.ChangeEvent<HTMLInputElement>);
+                      }}
+                    >
+                      {prompt}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
