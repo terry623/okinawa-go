@@ -12,11 +12,15 @@ import {
   Cloud,
   Thermometer,
   Info,
+  Edit,
 } from "lucide-react";
 import { presetPrompts } from "@/prompts";
 import { getWeatherIcon } from "@/utils";
+import { useRef, useEffect } from "react";
 
 export default function Chat() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const {
     messages,
     input,
@@ -24,6 +28,7 @@ export default function Chat() {
     handleSubmit,
     error,
     status,
+    setMessages,
     reload,
   } = useChat({
     api: "/api/use-chat",
@@ -35,6 +40,12 @@ export default function Chat() {
       }
     },
   });
+
+  useEffect(() => {
+    if (status === "ready") {
+      inputRef.current?.focus();
+    }
+  }, [status, messages]);
 
   return (
     <div className="flex flex-col w-full h-dvh max-w-2xl py-4 px-4 md:py-8 mx-auto">
@@ -148,6 +159,19 @@ export default function Chat() {
           )}
 
           <div className="flex flex-wrap gap-2 justify-start mb-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-muted-foreground"
+              onClick={() => {
+                setMessages([]);
+                handleInputChange({
+                  target: { value: "" },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
             {presetPrompts.map((prompt, index) => (
               <Button
                 key={index}
@@ -167,9 +191,10 @@ export default function Chat() {
 
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
-              className="flex-1"
+              ref={inputRef}
+              className="flex-1 text-sm"
               value={input}
-              placeholder="Type a message about Okinawa..."
+              placeholder="How can I help you today?"
               onChange={handleInputChange}
               disabled={status !== "ready"}
             />

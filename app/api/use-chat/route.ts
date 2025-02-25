@@ -1,16 +1,18 @@
 import { openai } from "@ai-sdk/openai";
 import { streamText } from "ai";
-import { weatherTools } from "../tools/weather-tools";
+import { weatherTools } from "@/tools/weather-tools";
+import { currencyTool } from "@/tools/currency-tools";
 import { systemPrompt } from "@/prompts";
-import { currencyTool } from "../tools/currency-tools";
 
 export const maxDuration = 30;
+
+const api_model = "gpt-4o-mini";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = streamText({
-    model: openai("gpt-4o-mini"),
+    model: openai(api_model),
     messages,
     toolCallStreaming: true,
     system: systemPrompt,
