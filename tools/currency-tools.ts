@@ -9,6 +9,10 @@ const currencySchema = z.object({
   to: z.string().length(3),
 });
 
+export const exchangeRateToolPrompt =
+  "當用戶詢問匯率時，你應該使用 getCurrentExchangeRate 工具獲取最新匯率信息。" +
+  "請始終使用英文作為 getCurrentExchangeRate 的參數。";
+
 export async function getCurrentExchangeRate(from: string, to: string) {
   if (!apiKey) {
     throw new Error("Currency API key is not configured");
@@ -21,7 +25,6 @@ export async function getCurrentExchangeRate(from: string, to: string) {
   }
 
   const data = await response.json();
-  console.log(data);
 
   return data.conversion_rates[to];
 }

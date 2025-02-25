@@ -2,6 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { weatherTools } from "@/tools/weather-tools";
 import { currencyTool } from "@/tools/currency-tools";
+import { hackmdTools } from "@/tools/hackmd-tools";
 import { systemPrompt } from "@/prompts";
 
 export const maxDuration = 30;
@@ -19,6 +20,7 @@ export async function POST(req: Request) {
     tools: {
       ...weatherTools,
       ...currencyTool,
+      ...hackmdTools,
     },
   });
 

@@ -14,8 +14,11 @@ const showWeatherInformationSchema = z.object({
     .describe("用繁體中文（非簡體中文）撰寫 2-3 句關於該城市典型天氣的描述。"),
 });
 
+export const weatherToolPrompt =
+  "當用戶詢問天氣時，你應該使用 showWeatherInformation 工具向用戶展示天氣信息，而不是直接描述天氣。" +
+  "請始終使用英文作為 getWeatherInformation 的參數。";
+
 export const weatherTools: ToolSet = {
-  // server-side tool with execute function:
   getWeatherInformation: {
     description: "向用戶展示指定城市的天氣",
     parameters: getWeatherInformationSchema,
@@ -42,7 +45,6 @@ export const weatherTools: ToolSet = {
       };
     },
   },
-  // client-side tool that displays whether information to the user:
   showWeatherInformation: {
     description: "向用戶展示天氣信息，始終使用此工具告知用戶天氣信息。",
     parameters: showWeatherInformationSchema,

@@ -17,6 +17,9 @@ import {
 import { presetPrompts } from "@/prompts";
 import { getWeatherIcon } from "@/utils";
 import { useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 
 export default function Chat() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -33,10 +36,13 @@ export default function Chat() {
   } = useChat({
     api: "/api/use-chat",
     maxSteps: 5,
-    // run client-side tools that are automatically executed:
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "showWeatherInformation") {
         return "Weather information was shown to the user.";
+      }
+
+      if (toolCall.toolName === "showHackmdContent") {
+        return "HackMD content was shown to the user.";
       }
     },
   });
@@ -76,7 +82,6 @@ export default function Chat() {
                 {m.toolInvocations?.map((toolInvocation: ToolInvocation) => {
                   const { toolCallId, args } = toolInvocation;
 
-                  // render display weather tool calls:
                   if (toolInvocation.toolName === "showWeatherInformation") {
                     return (
                       <Card
@@ -118,6 +123,49 @@ export default function Chat() {
                               <div className="text-sm text-muted-foreground flex items-start">
                                 <Info className="h-4 w-4 mr-2 mt-1 shrink-0" />
                                 <span>{args.typicalWeather}</span>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+
+                  if (toolInvocation.toolName === "showHackmdContent") {
+                    return (
+                      <Card
+                        key={toolCallId}
+                        className="mt-3 bg-card text-card-foreground overflow-hidden border"
+                      >
+                        <CardContent className="p-4 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-bold text-xl">行程筆記</h4>
+                            <Info className="h-4 w-4" />
+                          </div>
+
+                          <div className="flex flex-col gap-3">
+                            <div className="text-sm max-h-60 overflow-y-auto p-2 bg-muted rounded">
+                              {args?.content && (
+                                <div className="prose prose-sm dark:prose-invert max-w-none">
+                                  <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeHighlight]}
+                                  >
+                                    {args.content}
+                                  </ReactMarkdown>
+                                </div>
+                              )}
+                            </div>
+                            {args?.source && (
+                              <div className="text-xs text-muted-foreground">
+                                <a
+                                  href={args.source}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="underline"
+                                >
+                                  查看原始文檔
+                                </a>
                               </div>
                             )}
                           </div>
