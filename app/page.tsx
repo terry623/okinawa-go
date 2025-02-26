@@ -20,9 +20,42 @@ import { useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import { ComponentPropsWithoutRef } from "react";
+
+const markdownComponents = {
+  a: ({ node, ...props }: ComponentPropsWithoutRef<"a"> & { node: any }) => (
+    <a {...props} className="text-blue-500 hover:underline" />
+  ),
+  pre: ({
+    node,
+    ...props
+  }: ComponentPropsWithoutRef<"pre"> & { node: any }) => (
+    <pre {...props} className="overflow-auto max-w-full" />
+  ),
+  code: ({
+    node,
+    inline,
+    ...props
+  }: ComponentPropsWithoutRef<"code"> & { node: any; inline?: boolean }) =>
+    inline ? (
+      <code {...props} className="break-words" />
+    ) : (
+      <code {...props} className="overflow-x-auto block" />
+    ),
+  li: ({ children }: ComponentPropsWithoutRef<"li">) => {
+    return <div className="space-y-1">{children}</div>;
+  },
+  ul: ({ children }: ComponentPropsWithoutRef<"ul">) => {
+    return <div className="space-y-1">{children}</div>;
+  },
+  ol: ({ children }: ComponentPropsWithoutRef<"ol">) => {
+    return <div className="space-y-1">{children}</div>;
+  },
+};
 
 export default function Chat() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
     messages,
@@ -47,11 +80,19 @@ export default function Chat() {
     },
   });
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     if (status === "ready") {
       inputRef.current?.focus();
     }
   }, [status, messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, status]);
 
   return (
     <div className="flex flex-col w-full h-dvh max-w-2xl py-4 px-4 md:py-8 mx-auto">
@@ -78,7 +119,21 @@ export default function Chat() {
                     : "bg-muted"
                 } max-w-[85%] shadow-sm transition-opacity duration-300 ease-in-out`}
               >
-                <div className="whitespace-pre-wrap">{m.content}</div>
+                <div className="whitespace-pre-wrap break-words">
+                  {m.role === "user" ? (
+                    m.content
+                  ) : (
+                    <div className="prose prose-sm dark:prose-invert max-w-none overflow-hidden break-words">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeHighlight]}
+                        components={markdownComponents}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                </div>
                 {m.toolInvocations?.map((toolInvocation: ToolInvocation) => {
                   const { toolCallId, args } = toolInvocation;
 
@@ -122,7 +177,9 @@ export default function Chat() {
                             {args?.typicalWeather && (
                               <div className="text-sm text-muted-foreground flex items-start">
                                 <Info className="h-4 w-4 mr-2 mt-1 shrink-0" />
-                                <span>{args.typicalWeather}</span>
+                                <span className="break-words">
+                                  {args.typicalWeather}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -146,10 +203,11 @@ export default function Chat() {
                           <div className="flex flex-col gap-3">
                             <div className="text-sm max-h-60 overflow-y-auto p-2 bg-muted rounded">
                               {args?.content && (
-                                <div className="prose prose-sm dark:prose-invert max-w-none">
+                                <div className="prose prose-sm dark:prose-invert max-w-none break-words">
                                   <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     rehypePlugins={[rehypeHighlight]}
+                                    components={markdownComponents}
                                   >
                                     {args.content}
                                   </ReactMarkdown>
@@ -186,6 +244,9 @@ export default function Chat() {
               </span>
             </div>
           )}
+
+          {/* Invisible element to scroll to */}
+          <div ref={messagesEndRef} />
         </CardContent>
 
         <div className="p-4 border-t">
