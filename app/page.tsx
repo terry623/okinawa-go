@@ -13,6 +13,7 @@ import {
   Thermometer,
   Info,
   Edit,
+  Camera,
 } from "lucide-react";
 import { presetPrompts } from "@/prompts";
 import { getWeatherIcon } from "@/utils";
@@ -20,39 +21,8 @@ import { useRef, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import { ComponentPropsWithoutRef } from "react";
 import { ImageUploadDialog } from "@/app/components/ImageUploadDialog";
-
-const markdownComponents = {
-  a: ({ node, ...props }: ComponentPropsWithoutRef<"a"> & { node: any }) => (
-    <a {...props} className="text-blue-500 hover:underline" />
-  ),
-  pre: ({
-    node,
-    ...props
-  }: ComponentPropsWithoutRef<"pre"> & { node: any }) => (
-    <pre {...props} className="overflow-auto max-w-full" />
-  ),
-  code: ({
-    node,
-    inline,
-    ...props
-  }: ComponentPropsWithoutRef<"code"> & { node: any; inline?: boolean }) =>
-    inline ? (
-      <code {...props} className="break-words" />
-    ) : (
-      <code {...props} className="overflow-x-auto block" />
-    ),
-  li: ({ children }: ComponentPropsWithoutRef<"li">) => {
-    return <div className="space-y-1">{children}</div>;
-  },
-  ul: ({ children }: ComponentPropsWithoutRef<"ul">) => {
-    return <div className="space-y-1">{children}</div>;
-  },
-  ol: ({ children }: ComponentPropsWithoutRef<"ol">) => {
-    return <div className="space-y-1">{children}</div>;
-  },
-};
+import { markdownComponents } from "./components/markdownComponents";
 
 export default function Chat() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -272,7 +242,6 @@ export default function Chat() {
               </Button>
             </div>
           )}
-
           <div className="flex flex-wrap gap-2 justify-start mb-3">
             <Button
               variant="outline"
@@ -286,6 +255,18 @@ export default function Chat() {
               }}
             >
               <Edit className="h-4 w-4" />
+              新對話
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-muted-foreground"
+              onClick={() => {
+                setIsImageDialogOpen(true);
+              }}
+            >
+              <Camera className="h-4 w-4" />
+              拍照或上傳圖片
             </Button>
             {presetPrompts.map((prompt, index) => (
               <Button
@@ -294,11 +275,6 @@ export default function Chat() {
                 size="sm"
                 className="text-muted-foreground"
                 onClick={() => {
-                  if (prompt === "拍照或上傳圖片") {
-                    setIsImageDialogOpen(true);
-                    return;
-                  }
-
                   handleInputChange({
                     target: { value: prompt },
                   } as React.ChangeEvent<HTMLInputElement>);
