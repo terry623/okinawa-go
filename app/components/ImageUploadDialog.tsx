@@ -165,16 +165,7 @@ export function ImageUploadDialog({
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-24"
-                onClick={handleTakePhoto}
-                disabled={isAnalyzing}
-              >
-                <Camera className="h-8 w-8" />
-                <span>拍照</span>
-              </Button>
+            <div className="grid grid-cols-1 gap-4 pt-4">
               <Button
                 variant="outline"
                 className="flex flex-col items-center gap-2 h-24"
@@ -182,7 +173,7 @@ export function ImageUploadDialog({
                 disabled={isAnalyzing}
               >
                 <Upload className="h-8 w-8" />
-                <span>上傳圖片</span>
+                <span>分析你看到的商品資訊、日幣價格、風景名稱等..</span>
               </Button>
             </div>
 

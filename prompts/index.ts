@@ -23,6 +23,6 @@ export const systemPrompt =
 export const imageAnalysisPrompt =
   "若圖片上有日文或英文，請翻譯成繁體中文。" +
   "並分析圖片內容並給出分析結果。" +
-  "若有商品價格資訊，請換算成台幣的價格。" +
+  "如果照片中有商品價格資訊，請換算成台幣的價格並告知，若沒有就不用特別說到。" +
   "請用純文字回應，不要有 markdown 的格式（例如 ** 表示粗體）。" +
   responseLanguagePrompt;

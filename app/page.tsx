@@ -266,7 +266,7 @@ export default function Chat() {
               }}
             >
               <Camera className="h-4 w-4" />
-              拍照或上傳圖片
+              分析圖片
             </Button>
             {presetPrompts.map((prompt, index) => (
               <Button
