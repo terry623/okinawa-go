@@ -128,7 +128,7 @@ export function ImageUploadDialog({
         <DialogHeader>
           <DialogTitle>選擇圖片來源</DialogTitle>
           <DialogDescription>
-            請選擇要使用相機拍照或從裝置上傳圖片
+            分析你看到的商品資訊、日幣價格等..
           </DialogDescription>
         </DialogHeader>
 
@@ -165,7 +165,7 @@ export function ImageUploadDialog({
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-4 pt-4">
+            <div className="grid grid-cols-1 gap-4">
               <Button
                 variant="outline"
                 className="flex flex-col items-center gap-2 h-24"
@@ -173,7 +173,6 @@ export function ImageUploadDialog({
                 disabled={isAnalyzing}
               >
                 <Upload className="h-8 w-8" />
-                <span>分析你看到的商品資訊、日幣價格、風景名稱等..</span>
               </Button>
             </div>
 
