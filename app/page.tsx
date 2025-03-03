@@ -16,11 +16,12 @@ import {
 } from "lucide-react";
 import { presetPrompts } from "@/prompts";
 import { getWeatherIcon } from "@/utils";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { ComponentPropsWithoutRef } from "react";
+import { ImageUploadDialog } from "@/app/components/ImageUploadDialog";
 
 const markdownComponents = {
   a: ({ node, ...props }: ComponentPropsWithoutRef<"a"> & { node: any }) => (
@@ -56,6 +57,7 @@ const markdownComponents = {
 export default function Chat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   const {
     messages,
@@ -96,6 +98,10 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col w-full h-dvh max-w-2xl py-4 px-4 md:py-8 mx-auto">
+      <ImageUploadDialog
+        isOpen={isImageDialogOpen}
+        onOpenChange={setIsImageDialogOpen}
+      />
       <Card className="flex-1 overflow-hidden flex flex-col shadow-lg">
         <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 ? (
@@ -288,6 +294,11 @@ export default function Chat() {
                 size="sm"
                 className="text-muted-foreground"
                 onClick={() => {
+                  if (prompt === "拍照或上傳圖片") {
+                    setIsImageDialogOpen(true);
+                    return;
+                  }
+
                   handleInputChange({
                     target: { value: prompt },
                   } as React.ChangeEvent<HTMLInputElement>);
