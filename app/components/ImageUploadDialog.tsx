@@ -124,7 +124,7 @@ export function ImageUploadDialog({
         onOpenChange(open);
       }}
     >
-      <DialogContent className="w-5/6 rounded-lg">
+      <DialogContent className="w-5/6 md:max-w-md rounded-lg">
         <DialogHeader>
           <DialogTitle>選擇圖片來源</DialogTitle>
           <DialogDescription>
@@ -187,14 +187,14 @@ export function ImageUploadDialog({
         )}
 
         {isAnalyzing && (
-          <div className="mt-4 text-center">
+          <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto" />
             <p className="mt-2">正在分析圖片...</p>
           </div>
         )}
 
         {analysis && (
-          <div className="mt-4 p-4 bg-muted rounded-lg">
+          <div className="p-4 bg-muted rounded-lg">
             <h3 className="font-medium mb-2">AI 分析結果：</h3>
             <p className="text-sm whitespace-pre-wrap">{analysis}</p>
           </div>

@@ -230,6 +230,8 @@ export default function Chat() {
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               ref={inputRef}
+              autoComplete="off"
+              data-lpignore="true"
               className="flex-1 text-sm"
               value={input}
               placeholder="How can I help you today?"
