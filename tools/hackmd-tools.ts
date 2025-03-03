@@ -7,14 +7,9 @@ const hackmdSchema = z.object({
   url: z.string().url().describe("HackMD 文檔的 URL"),
 });
 
-const showHackmdContentSchema = z.object({
-  content: z.string().describe("從 HackMD 獲取的內容"),
-  source: z.string().describe("HackMD 文檔的 URL"),
-});
-
 export const hackmdToolPrompt =
-  "當用戶詢問行程、班機、飯店或其他旅行相關信息時，你應該使用 getHackmdContent 工具獲取已經已有的 HackMD 內容，" +
-  "然後根據筆記內容回答問題。獲取內容後，使用 showHackmdContent 工具向用戶展示相關信息。";
+  "當用戶詢問行程、班機、飯店或其他旅行相關信息時，你應該使用 getHackmdContent 工具獲取已經已有的 HackMD 內容。" +
+  "獲取內容後，不要馬上完整展示你得知的所有內容，簡單問用戶想要知道什麼即可。";
 
 export const hackmdTools: ToolSet = {
   getHackmdContent: {
@@ -34,9 +29,5 @@ export const hackmdTools: ToolSet = {
         source: apiUrl,
       };
     },
-  },
-  showHackmdContent: {
-    description: "向用戶展示從 HackMD 獲取的內容",
-    parameters: showHackmdContentSchema,
   },
 };

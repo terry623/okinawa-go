@@ -18,11 +18,7 @@ import {
 import { presetPrompts } from "@/prompts";
 import { getWeatherIcon } from "@/utils";
 import { useRef, useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import { ImageUploadDialog } from "@/app/components/ImageUploadDialog";
-import { markdownComponents } from "./components/markdownComponents";
 
 export default function Chat() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,10 +40,6 @@ export default function Chat() {
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "showWeatherInformation") {
         return "Weather information was shown to the user.";
-      }
-
-      if (toolCall.toolName === "showHackmdContent") {
-        return "HackMD content was shown to the user.";
       }
     },
   });
@@ -100,13 +92,7 @@ export default function Chat() {
                     m.content
                   ) : (
                     <div className="prose prose-sm dark:prose-invert max-w-none overflow-hidden break-words">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeHighlight]}
-                        components={markdownComponents}
-                      >
-                        {m.content}
-                      </ReactMarkdown>
+                      {m.content}
                     </div>
                   )}
                 </div>
@@ -156,50 +142,6 @@ export default function Chat() {
                                 <span className="break-words">
                                   {args.typicalWeather}
                                 </span>
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  }
-
-                  if (toolInvocation.toolName === "showHackmdContent") {
-                    return (
-                      <Card
-                        key={toolCallId}
-                        className="mt-3 bg-card text-card-foreground overflow-hidden border"
-                      >
-                        <CardContent className="p-4 space-y-3">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-bold text-xl">行程筆記</h4>
-                            <Info className="h-4 w-4" />
-                          </div>
-
-                          <div className="flex flex-col gap-3">
-                            <div className="text-sm max-h-60 overflow-y-auto p-2 bg-muted rounded">
-                              {args?.content && (
-                                <div className="prose prose-sm dark:prose-invert max-w-none break-words">
-                                  <ReactMarkdown
-                                    remarkPlugins={[remarkGfm]}
-                                    rehypePlugins={[rehypeHighlight]}
-                                    components={markdownComponents}
-                                  >
-                                    {args.content}
-                                  </ReactMarkdown>
-                                </div>
-                              )}
-                            </div>
-                            {args?.source && (
-                              <div className="text-xs text-muted-foreground">
-                                <a
-                                  href={args.source}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="underline"
-                                >
-                                  查看原始文檔
-                                </a>
                               </div>
                             )}
                           </div>
