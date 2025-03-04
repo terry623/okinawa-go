@@ -30,6 +30,12 @@ export function ImageUploadDialog({
     fileInputRef.current?.click();
   };
 
+  const resetState = () => {
+    setIsAnalyzing(false);
+    setAnalysis(null);
+    setUploadedImage(null);
+  };
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -96,8 +102,7 @@ export function ImageUploadDialog({
       open={isOpen}
       onOpenChange={(open) => {
         if (!open) {
-          setAnalysis(null);
-          setUploadedImage(null);
+          resetState();
         }
         onOpenChange(open);
       }}

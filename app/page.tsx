@@ -24,6 +24,7 @@ export default function Chat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [dialogKey, setDialogKey] = useState(0);
 
   const {
     messages,
@@ -58,9 +59,16 @@ export default function Chat() {
     scrollToBottom();
   }, [messages, status]);
 
+  // Create a new dialog instance each time it's opened
+  const handleOpenImageDialog = () => {
+    setDialogKey((prevKey) => prevKey + 1);
+    setIsImageDialogOpen(true);
+  };
+
   return (
     <div className="flex flex-col w-full h-dvh max-w-2xl py-4 px-4 md:py-8 mx-auto">
       <ImageUploadDialog
+        key={dialogKey}
         isOpen={isImageDialogOpen}
         onOpenChange={setIsImageDialogOpen}
       />
@@ -203,9 +211,7 @@ export default function Chat() {
               variant="outline"
               size="sm"
               className="text-muted-foreground"
-              onClick={() => {
-                setIsImageDialogOpen(true);
-              }}
+              onClick={handleOpenImageDialog}
             >
               <Camera className="h-4 w-4" />
               分析圖片
