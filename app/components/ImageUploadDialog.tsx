@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Camera, Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 
 interface ImageUploadDialogProps {
   isOpen: boolean;
@@ -24,47 +24,6 @@ export function ImageUploadDialog({
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [showCamera, setShowCamera] = useState(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
-    setShowCamera(false);
-  };
-
-  const handleTakePhoto = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      setStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      setShowCamera(true);
-    } catch (error) {
-      console.error("Error accessing camera:", error);
-      alert("無法存取相機。請確保已授予相機權限。");
-    }
-  };
-
-  const capturePhoto = async () => {
-    if (!videoRef.current) return;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.drawImage(videoRef.current, 0, 0);
-    const base64Image = canvas.toDataURL("image/jpeg");
-
-    await handleImageAnalysis(base64Image);
-    stopCamera();
-  };
 
   const handleUploadImage = () => {
     fileInputRef.current?.click();
@@ -117,7 +76,6 @@ export function ImageUploadDialog({
       open={isOpen}
       onOpenChange={(open) => {
         if (!open) {
-          stopCamera();
           setAnalysis(null);
           setUploadedImage(null);
         }
@@ -132,19 +90,7 @@ export function ImageUploadDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {showCamera ? (
-          <div className="space-y-4">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full rounded-lg"
-            />
-            <div className="flex justify-center">
-              <Button onClick={capturePhoto}>拍照</Button>
-            </div>
-          </div>
-        ) : uploadedImage ? (
+        {uploadedImage ? (
           <div className="space-y-4">
             <img
               src={uploadedImage}
