@@ -1,0 +1,16 @@
+{
+  "name": "Okinawa Go",
+  "short_name": "Okinawa Go",
+  "description": "Your travel companion for Okinawa",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/icons/travel.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+} 
