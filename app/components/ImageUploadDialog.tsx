@@ -10,6 +10,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Upload, Loader2 } from "lucide-react";
+import imageCompression from "browser-image-compression";
 
 interface ImageUploadDialogProps {
   isOpen: boolean;
@@ -35,12 +36,31 @@ export function ImageUploadDialog({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Image = reader.result as string;
-      await handleImageAnalysis(base64Image);
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1080,
+      useWebWorker: true,
     };
-    reader.readAsDataURL(file);
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const base64Image = await convertToBase64(compressedFile);
+      await handleImageAnalysis(base64Image);
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      alert("壓縮圖片時發生錯誤。請稍後再試。");
+    }
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleImageAnalysis = async (base64Image: string) => {
