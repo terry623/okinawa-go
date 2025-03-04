@@ -81,7 +81,7 @@ export default function Chat() {
                   Welcome to Okinawa Go
                 </h3>
                 <p className="text-sm max-w-md">
-                  Your personal assistant for discovering Okinawa.
+                  Travelers: Terry, Sophie, Jacky, Annser, Jimmy
                 </p>
               </div>
             </div>
