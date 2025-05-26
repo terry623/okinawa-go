@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { Metadata } from "next";
 import PWAHandler from "./pwa-handler";
 import Script from "next/script";
+import { PostHogProvider } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,7 +53,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <PWAHandler />
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
         <Script src="/ios-pwa.js" strategy="afterInteractive" />
       </body>
     </html>

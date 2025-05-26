@@ -18,6 +18,7 @@ import {
 import { presetPrompts } from "@/prompts";
 import { getWeatherIcon } from "@/utils";
 import { useRef, useEffect, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import { ImageUploadDialog } from "@/app/components/ImageUploadDialog";
 
 export default function Chat() {
@@ -25,6 +26,7 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [dialogKey, setDialogKey] = useState(0);
+  const posthog = usePostHog();
 
   const {
     messages,
@@ -198,6 +200,10 @@ export default function Chat() {
               size="sm"
               className="text-muted-foreground"
               onClick={() => {
+                posthog.capture("new_conversation_clicked", {
+                  timestamp: new Date().toISOString(),
+                  messages_count: messages.length,
+                });
                 setMessages([]);
                 handleInputChange({
                   target: { value: "" },
@@ -211,7 +217,13 @@ export default function Chat() {
               variant="outline"
               size="sm"
               className="text-muted-foreground"
-              onClick={handleOpenImageDialog}
+              onClick={() => {
+                posthog.capture("analyze_image_clicked", {
+                  timestamp: new Date().toISOString(),
+                  messages_count: messages.length,
+                });
+                handleOpenImageDialog();
+              }}
             >
               <Camera className="h-4 w-4" />
               分析圖片
@@ -223,6 +235,12 @@ export default function Chat() {
                 size="sm"
                 className="text-muted-foreground"
                 onClick={() => {
+                  posthog.capture("preset_prompt_clicked", {
+                    timestamp: new Date().toISOString(),
+                    prompt_text: prompt,
+                    prompt_index: index,
+                    messages_count: messages.length,
+                  });
                   handleInputChange({
                     target: { value: prompt },
                   } as React.ChangeEvent<HTMLInputElement>);
@@ -233,7 +251,18 @@ export default function Chat() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form
+            onSubmit={(e) => {
+              posthog.capture("message_submitted", {
+                timestamp: new Date().toISOString(),
+                message_length: input.length,
+                messages_count: messages.length,
+                has_content: input.trim().length > 0,
+              });
+              handleSubmit(e);
+            }}
+            className="flex gap-2"
+          >
             <Input
               ref={inputRef}
               autoComplete="off"
